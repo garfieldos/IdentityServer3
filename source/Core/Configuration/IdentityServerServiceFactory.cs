@@ -274,7 +274,7 @@ namespace IdentityServer3.Core.Configuration
         /// The redirect URI validator.
         /// </value>
         public Registration<IRedirectUriValidator> RedirectUriValidator { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the localization service.
         /// </summary>
@@ -348,6 +348,17 @@ namespace IdentityServer3.Core.Configuration
         {
             Logger.Error(message);
             throw new InvalidOperationException(message);
+        }
+
+        public List<Type> AutofacModules { get; set; }
+        public void RegisterAutofacModule<T>()
+        {
+            if (AutofacModules == null)
+            {
+                AutofacModules = new List<Type>();
+            }
+
+            AutofacModules.Add(typeof(T));
         }
     }
 }
