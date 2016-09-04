@@ -178,11 +178,14 @@ namespace IdentityServer3.Core.Configuration.Hosting
             }
 
             // reguistering additional autofac modules
-            foreach (var autofacModule in fact.AutofacModules)
+            if (fact.AutofacModules != null)
             {
-                var registerModuleMethod = typeof(ContainerBuilder).GetMethod("RegisterModule");
-                registerModuleMethod.MakeGenericMethod(autofacModule);
-                registerModuleMethod.Invoke(builder, new object[0]);
+                foreach (var autofacModule in fact.AutofacModules)
+                {
+                    var registerModuleMethod = typeof(ContainerBuilder).GetMethod("RegisterModule");
+                    registerModuleMethod.MakeGenericMethod(autofacModule);
+                    registerModuleMethod.Invoke(builder, new object[0]);
+                }
             }
 
             return builder.Build();
