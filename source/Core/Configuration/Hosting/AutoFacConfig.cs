@@ -182,9 +182,12 @@ namespace IdentityServer3.Core.Configuration.Hosting
             {
                 foreach (var autofacModule in fact.AutofacModules)
                 {
-                    var registerModuleMethod = typeof(ContainerBuilder).GetMethod("RegisterModule");
-                    registerModuleMethod.MakeGenericMethod(autofacModule);
-                    registerModuleMethod.Invoke(builder, new object[0]);
+                    var registerModuleMethod = typeof (ModuleRegistrationExtensions)
+                        .GetMethods()
+                        .First(x => x.Name == "RegisterModule" && x.IsGenericMethod);
+
+                    var generic = registerModuleMethod.MakeGenericMethod(autofacModule);
+                    generic.Invoke(null, new object[] { builder });
                 }
             }
 
