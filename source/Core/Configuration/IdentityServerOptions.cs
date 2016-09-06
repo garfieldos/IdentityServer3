@@ -18,6 +18,7 @@ using IdentityServer3.Core.Logging;
 using Owin;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer3.Core.Configuration
@@ -49,7 +50,7 @@ namespace IdentityServer3.Core.Configuration
         }
 
         internal void Validate()
-        {            
+        {
             if (AuthenticationOptions == null)
             {
                 throw new ArgumentException("AuthenticationOptions is missing");
@@ -213,13 +214,13 @@ namespace IdentityServer3.Core.Configuration
         /// <c>true</c> if the welcome page is enabled; otherwise, <c>false</c>.
         /// </value>
         public bool EnableWelcomePage { get; set; }
-        
+
         internal IEnumerable<X509Certificate2> PublicKeysForMetadata
         {
             get
             {
                 var keys = new List<X509Certificate2>();
-                
+
                 if (SigningCertificate != null)
                 {
                     keys.Add(SigningCertificate);
@@ -233,5 +234,7 @@ namespace IdentityServer3.Core.Configuration
                 return keys;
             }
         }
+
+        public Assembly ExternalControllersAssembly { get; set; }
     }
 }

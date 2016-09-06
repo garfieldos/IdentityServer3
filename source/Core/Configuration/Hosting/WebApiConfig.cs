@@ -41,7 +41,7 @@ namespace IdentityServer3.Core.Configuration.Hosting
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
             config.Services.Add(typeof(IExceptionLogger), new LogProviderExceptionLogger());
-            config.Services.Replace(typeof(IHttpControllerTypeResolver), new HttpControllerTypeResolver());
+            config.Services.Replace(typeof(IHttpControllerTypeResolver), new HttpControllerTypeResolver(options));
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.LocalOnly;
@@ -64,11 +64,16 @@ namespace IdentityServer3.Core.Configuration.Hosting
 
         private static void ConfigureRoutes(IdentityServerOptions options, HttpConfiguration config)
         {
+            /* config.Routes.MapHttpRoute(
+                   "session.logout",
+                   "session/logout",
+                   new { controller = "Session", action = "Logout" }); */
+
             if (options.EnableWelcomePage)
             {
                 config.Routes.MapHttpRoute(
-                    Constants.RouteNames.Welcome, 
-                    Constants.RoutePaths.Welcome, 
+                    Constants.RouteNames.Welcome,
+                    Constants.RoutePaths.Welcome,
                     new { controller = "Welcome", action = "Get" });
             }
 
@@ -137,7 +142,7 @@ namespace IdentityServer3.Core.Configuration.Hosting
                 config.Routes.MapHttpRoute(
                     Constants.RouteNames.Oidc.DiscoveryWebKeys,
                     Constants.RoutePaths.Oidc.DiscoveryWebKeys,
-                    new { controller = "DiscoveryEndpoint", action= "GetKeyData" });
+                    new { controller = "DiscoveryEndpoint", action = "GetKeyData" });
             }
 
             if (options.Endpoints.EnableEndSessionEndpoint)
@@ -147,7 +152,7 @@ namespace IdentityServer3.Core.Configuration.Hosting
                     Constants.RoutePaths.Oidc.EndSession,
                     new { controller = "EndSession", action = "Logout" });
             }
-            
+
             // this one is always enabled/allowed (for use by our logout page)
             config.Routes.MapHttpRoute(
                 Constants.RouteNames.Oidc.EndSessionCallback,
@@ -167,7 +172,7 @@ namespace IdentityServer3.Core.Configuration.Hosting
                 config.Routes.MapHttpRoute(
                     Constants.RouteNames.Oidc.Token,
                     Constants.RoutePaths.Oidc.Token,
-                    new { controller = "TokenEndpoint", action= "Post" });
+                    new { controller = "TokenEndpoint", action = "Post" });
             }
 
             if (options.Endpoints.EnableTokenRevocationEndpoint)
@@ -189,16 +194,33 @@ namespace IdentityServer3.Core.Configuration.Hosting
 
         private class HttpControllerTypeResolver : IHttpControllerTypeResolver
         {
+            private readonly IdentityServerOptions _identityServerOptions;
+            public HttpControllerTypeResolver(IdentityServerOptions identityServerOptions)
+            {
+                _identityServerOptions = identityServerOptions;
+            }
             public ICollection<Type> GetControllerTypes(IAssembliesResolver _)
             {
-                var httpControllerType = typeof (IHttpController);
-                return typeof (WebApiConfig)
-                    .Assembly
-                    .GetLoadableTypes()
-                    .Where(t => t.IsClass && !t.IsAbstract && httpControllerType.IsAssignableFrom(t))
-                    .ToList();
+                var httpControllerType = typeof(IHttpController);
+                var controllerTypes = new List<Type>();
+                controllerTypes.AddRange(
+                    typeof(WebApiConfig)
+                        .Assembly
+                        .GetLoadableTypes()
+                        .Where(t => t.IsClass && !t.IsAbstract && httpControllerType.IsAssignableFrom(t))
+                        .ToList());
+
+                if (_identityServerOptions.ExternalControllersAssembly != null)
+                {
+                    controllerTypes.AddRange(
+                        _identityServerOptions
+                            .ExternalControllersAssembly
+                            .GetLoadableTypes()
+                            .Where(t => t.IsClass && !t.IsAbstract && httpControllerType.IsAssignableFrom(t))
+                            .ToList());
+                }
+                return controllerTypes;
             }
         }
-
     }
 }
