@@ -197,13 +197,20 @@
     <Compile Include="Endpoints\Connect\PoP\RsaPublicKeyJwk.cs" />
     <Compile Include="Endpoints\Setup\MockUserService.cs" />
 <<<<<<< HEAD
-    <Compile Include="Events\RefreshTokenRefreshDetailsTests.cs" />
 =======
+<<<<<<< Updated upstream
+=======
+    <Compile Include="Events\TokenRevokedDetailsTests.cs" />
+>>>>>>> claims_on_token_revoked_details
     <Compile Include="ResponseHandling\TokenErrorResultTests.cs" />
     <Compile Include="ResponseHandling\TokenExtensionsTests.cs" />
     <Compile Include="ResponseHandling\TokenResponseGeneratorTests_CustomResponseParameters.cs" />
     <Compile Include="ResponseHandling\TokenResultTests.cs" />
->>>>>>> Custom_response_parameters_for_custom_grants_3137
+    <Compile Include="Events\RefreshTokenRefreshDetailsTests.cs" />
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
+>>>>>>> claims_on_token_revoked_details
     <Compile Include="Services\Default\DefaultCorsPolicyServiceTests.cs" />
     <Compile Include="Services\Default\DefaultLocalizationServiceTests.cs" />
     <Compile Include="TestCert.cs" />
